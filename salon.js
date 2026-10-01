@@ -4,12 +4,12 @@ const SALON = {
   tagline: "You've earned it",
   address: "#11 - 2483 Main St, West Kelowna, BC V4T 2E8",
   phone: "250-452-9656",
-  email: "", // optional; adds an Email option to the booking sheet
+  email: "noor.farid.hayali@icloud.com", // optional; adds an Email option to the booking sheet
   // Optional online booking page. If set, "Book online" is the first option in the booking sheet.
   // Every Book button opens the sheet, which also offers Call / Text / Email when that data exists.
   bookingLink: "",
   instagram: "", // handle only, e.g. "elegantnails" (leave empty to hide)
-  hours: ["Hours coming soon"], // or e.g. ["Mon–Fri: 9am–6pm", "Sat: 10am–5pm", "Sun: Closed"]
+  hours: ["Mon–Fri: 10am–6pm", "Sat: 10am–6pm", "Sun: Closed"],
   // The single source of truth for the menu: it drives both the "Services" cards and the
   // "Choose your treatment" picker. Each category has a name, an `icon` and its services.
   // `icon` is a built-in name ("polish" | "gel" | "foot" | "wax" | "lash" | "sparkle")
