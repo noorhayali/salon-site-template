@@ -2,56 +2,247 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fffaf6">
   <title>Nail Salon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
+  <!-- Shared SVG artwork (gradients and reusable shapes) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#e3b3ba" style="stop-color:color-mix(in srgb,var(--accent) 55%,#fff)"/>
+        <stop offset="1" stop-color="#b76e79" style="stop-color:var(--accent)"/>
+      </linearGradient>
+      <linearGradient id="gDeep" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#5a3a40" style="stop-color:color-mix(in srgb,var(--accent) 45%,#1d1517)"/>
+        <stop offset="1" stop-color="#2b1d21" style="stop-color:color-mix(in srgb,var(--accent) 20%,#1d1517)"/>
+      </linearGradient>
+      <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f6e6c4"/><stop offset="1" stop-color="#b98a4e"/>
+      </linearGradient>
+      <linearGradient id="gStroke" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#d79aa3" style="stop-color:color-mix(in srgb,var(--accent) 75%,#fff)"/>
+        <stop offset=".5" stop-color="#b76e79" style="stop-color:var(--accent)"/>
+        <stop offset="1" stop-color="#d79aa3" style="stop-color:color-mix(in srgb,var(--accent) 80%,#fff)"/>
+      </linearGradient>
+      <linearGradient id="gSkin" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f9e3d6"/><stop offset="1" stop-color="#efc3ae"/>
+      </linearGradient>
+      <radialGradient id="gGlow">
+        <stop offset="0" stop-color="#e3b3ba" stop-opacity=".55" style="stop-color:var(--accent)"/>
+        <stop offset="1" stop-color="#e3b3ba" stop-opacity="0" style="stop-color:var(--accent)"/>
+      </radialGradient>
+
+      <!-- Polish bottle (200 x 300) -->
+      <g id="bottleShape">
+        <ellipse cx="100" cy="292" rx="72" ry="7" fill="#b76e79" opacity=".18"/>
+        <rect x="72" y="46" width="56" height="64" rx="10" fill="url(#gDeep)"/>
+        <rect x="66" y="36" width="68" height="20" rx="8" fill="url(#gGold)"/>
+        <rect x="24" y="96" width="152" height="196" rx="44" fill="url(#gBody)"/>
+        <rect x="40" y="118" width="14" height="120" rx="7" fill="#fff" opacity=".4"/>
+        <rect x="56" y="176" width="88" height="72" rx="18" fill="#fff" opacity=".88"/>
+        <path d="M100 194 L110 212 L100 230 L90 212Z" fill="url(#gBody)"/>
+      </g>
+      <!-- Brush / wand (40 x 230), tip at the bottom -->
+      <g id="wandShape">
+        <rect x="8" y="0" width="24" height="142" rx="12" fill="url(#gDeep)"/>
+        <rect x="13" y="12" width="4" height="108" rx="2" fill="#fff" opacity=".25"/>
+        <rect x="11" y="138" width="18" height="36" rx="4" fill="url(#gGold)"/>
+        <path class="bristle" d="M12 172 H28 C30 196 27 216 20 230 C13 216 10 196 12 172Z" fill="url(#gBody)"/>
+      </g>
+      <!-- Finished glossy nail (300 x 360) -->
+      <g id="nailDone">
+        <rect x="70" y="60" width="160" height="330" rx="80" fill="url(#gSkin)"/>
+        <path d="M100 112 C100 80 125 64 150 64 S200 80 200 112 L200 190 Q200 206 184 206 H116 Q100 206 100 190Z" fill="#b76e79" style="fill:var(--accent)"/>
+        <rect x="113" y="82" width="10" height="92" rx="5" fill="#fff" opacity=".55"/>
+        <rect x="177" y="96" width="6" height="40" rx="3" fill="#fff" opacity=".3"/>
+      </g>
+    </defs>
+  </svg>
+
   <div id="banner" class="banner" hidden></div>
 
-  <header class="hero" id="top">
-    <h1 id="hero-name"></h1>
-    <p id="hero-tagline" class="tagline"></p>
-    <a class="btn book-link" href="#">Book Now</a>
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#top" id="brand"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#how">How it works</a>
+      <a href="#colours">Colours</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#visit">Visit</a>
+    </nav>
+    <a class="btn btn-small book-link" href="#">Book Now</a>
   </header>
 
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-video" id="heroVideo" aria-hidden="true"></div>
+
+    <div class="art" aria-hidden="true">
+      <div class="stroke-row">
+        <div class="sw-outer"><div class="sw-inner">
+          <svg class="stroke" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path d="M0 20 C200 8 400 28 600 14 S900 10 1000 22 L1000 84 C800 96 600 76 400 90 S100 92 0 80Z" fill="url(#gStroke)"/>
+            <path d="M0 30 C250 22 450 38 650 28 S900 24 1000 32 L1000 40 C800 34 600 46 400 38 S150 34 0 42Z" fill="#fff" opacity=".42"/>
+            <path d="M0 66 C300 74 600 60 1000 70 L1000 74 C600 66 300 78 0 70Z" fill="#fff" opacity=".18"/>
+          </svg>
+        </div></div>
+      </div>
+      <div class="rig">
+        <div class="wand-x"><div class="wand-z"><svg class="wand" viewBox="0 0 40 230"><use href="#wandShape"/></svg></div></div>
+        <div class="bottle-wrap"><svg class="bottle" viewBox="0 0 200 300"><use href="#bottleShape"/></svg></div>
+      </div>
+    </div>
+
+    <div class="hero-copy">
+      <h1 id="hero-name"></h1>
+      <p id="hero-tagline" class="tagline"></p>
+      <a class="btn book-link" href="#">Book Now</a>
+    </div>
+  </section>
+
   <main>
-    <section id="services">
-      <h2>Services</h2>
-      <ul id="service-list" class="services"></ul>
+    <!-- ABOUT / STATEMENT -->
+    <section class="statement" id="about">
+      <p class="eyebrow reveal">About us</p>
+      <p class="statement-text" id="about-text"></p>
     </section>
 
-    <section id="gallery">
-      <h2>Gallery</h2>
-      <div class="grid">
-        <div class="tile t1"></div><div class="tile t2"></div><div class="tile t3"></div>
-        <div class="tile t4"></div><div class="tile t5"></div><div class="tile t6"></div>
+    <!-- SERVICES -->
+    <section class="services-sec" id="services">
+      <div class="wrap">
+        <p class="eyebrow reveal">The menu</p>
+        <h2 class="display reveal">Pamper,<br>perfected.</h2>
+        <ul id="service-list" class="cards"></ul>
       </div>
     </section>
 
-    <section id="about">
-      <h2>About</h2>
-      <p id="about-text"></p>
-    </section>
-
-    <section id="location">
-      <h2>Visit Us</h2>
-      <div class="two-col">
-        <div>
-          <h3>Hours</h3>
-          <ul id="hours" class="plain"></ul>
-          <h3>Address</h3>
-          <p id="address"></p>
+    <!-- HOW IT WORKS (pinned) -->
+    <section class="how" id="how">
+      <div class="how-pin">
+        <div class="how-head">
+          <p class="eyebrow">How it works</p>
+          <div class="dots" id="howDots" aria-hidden="true"><span></span><span></span><span></span></div>
         </div>
-        <iframe id="map" title="Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+        <div class="step" data-i="0">
+          <div class="scene">
+            <svg viewBox="0 0 400 360" role="img" aria-label="A polish bottle beside a menu of services">
+              <circle cx="262" cy="190" r="150" fill="url(#gGlow)" class="s-glow"/>
+              <g class="s1-bottle"><g transform="translate(192 52) scale(.78)"><use href="#bottleShape"/></g></g>
+              <g class="pill" style="--k:0" transform="translate(14 72)">
+                <g class="pill-in"><rect width="150" height="48" rx="24" fill="#fff" opacity=".1"/><rect width="150" height="48" rx="24" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
+                <circle cx="26" cy="24" r="9" fill="#fff" opacity=".7"/><rect x="46" y="18" width="70" height="5" rx="2.5" fill="#fff" opacity=".6"/><rect x="46" y="28" width="44" height="4" rx="2" fill="#fff" opacity=".3"/></g>
+              </g>
+              <g class="pill" style="--k:1" transform="translate(14 140)">
+                <g class="pill-in"><rect width="150" height="48" rx="24" fill="#fff" opacity=".1"/><rect width="150" height="48" rx="24" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
+                <rect class="pill-sel" width="150" height="48" rx="24" style="fill:var(--accent)"/>
+                <circle cx="26" cy="24" r="9" fill="#fff" opacity=".9"/><path class="pill-check" d="M21.5 24.5 L25 28 L31 20.5" fill="none" stroke="#b76e79" style="stroke:var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="46" y="18" width="70" height="5" rx="2.5" fill="#fff" opacity=".85"/><rect x="46" y="28" width="44" height="4" rx="2" fill="#fff" opacity=".45"/></g>
+              </g>
+              <g class="pill" style="--k:2" transform="translate(14 208)">
+                <g class="pill-in"><rect width="150" height="48" rx="24" fill="#fff" opacity=".1"/><rect width="150" height="48" rx="24" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
+                <circle cx="26" cy="24" r="9" fill="#fff" opacity=".7"/><rect x="46" y="18" width="58" height="5" rx="2.5" fill="#fff" opacity=".6"/><rect x="46" y="28" width="52" height="4" rx="2" fill="#fff" opacity=".3"/></g>
+              </g>
+            </svg>
+          </div>
+          <div class="step-text"><span class="num">01</span><h3></h3><p></p></div>
+        </div>
+
+        <div class="step" data-i="1">
+          <div class="scene">
+            <svg viewBox="0 0 400 360" role="img" aria-label="A fingernail being painted">
+              <defs><clipPath id="cNail"><path d="M100 112 C100 80 125 64 150 64 S200 80 200 112 L200 190 Q200 206 184 206 H116 Q100 206 100 190Z"/></clipPath></defs>
+              <circle cx="200" cy="190" r="150" fill="url(#gGlow)" class="s-glow"/>
+              <g transform="translate(50 0)">
+                <rect x="70" y="60" width="160" height="330" rx="80" fill="url(#gSkin)"/>
+                <path d="M100 112 C100 80 125 64 150 64 S200 80 200 112 L200 190 Q200 206 184 206 H116 Q100 206 100 190Z" fill="#fff" opacity=".55"/>
+                <g clip-path="url(#cNail)"><rect class="s2-paint" x="96" y="60" width="108" height="150" style="fill:var(--accent)"/>
+                  <rect class="s2-gloss" x="113" y="82" width="10" height="92" rx="5" fill="#fff" opacity=".55"/></g>
+                <g class="s2-brush"><g transform="translate(150 206) rotate(34) scale(.95) translate(-20 -230)"><use href="#wandShape"/></g></g>
+              </g>
+            </svg>
+          </div>
+          <div class="step-text"><span class="num">02</span><h3></h3><p></p></div>
+        </div>
+
+        <div class="step" data-i="2">
+          <div class="scene">
+            <svg viewBox="0 0 400 360" role="img" aria-label="A finished glossy nail with sparkles">
+              <circle class="s3-glow" cx="200" cy="190" r="165" fill="url(#gGlow)"/>
+              <g transform="translate(50 0)"><use href="#nailDone"/></g>
+              <g transform="translate(86 74)"><path class="sp" style="--k:0" d="M0 -22 C2 -6 6 -2 22 0 C6 2 2 6 0 22 C-2 6 -6 2 -22 0 C-6 -2 -2 -6 0 -22Z" fill="#fff"/></g>
+              <g transform="translate(330 120)"><path class="sp" style="--k:1" d="M0 -16 C2 -5 5 -2 16 0 C5 2 2 5 0 16 C-2 5 -5 2 -16 0 C-5 -2 -2 -5 0 -16Z" fill="#f6e6c4"/></g>
+              <g transform="translate(318 258)"><path class="sp" style="--k:2" d="M0 -24 C2 -7 7 -2 24 0 C7 2 2 7 0 24 C-2 7 -7 2 -24 0 C-7 -2 -2 -7 0 -24Z" fill="#fff"/></g>
+              <g transform="translate(70 232)"><path class="sp" style="--k:3" d="M0 -14 C1 -4 4 -1 14 0 C4 1 1 4 0 14 C-1 4 -4 1 -14 0 C-4 -1 -1 -4 0 -14Z" fill="#f6e6c4"/></g>
+              <g transform="translate(250 50)"><path class="sp" style="--k:4" d="M0 -12 C1 -3 3 -1 12 0 C3 1 1 3 0 12 C-1 3 -3 1 -12 0 C-3 -1 -1 -3 0 -12Z" fill="#fff"/></g>
+              <g transform="translate(40 150)"><path class="sp" style="--k:5" d="M0 -10 C1 -3 3 -1 10 0 C3 1 1 3 0 10 C-1 3 -3 1 -10 0 C-3 -1 -1 -3 0 -10Z" fill="#fff"/></g>
+            </svg>
+          </div>
+          <div class="step-text"><span class="num">03</span><h3></h3><p></p></div>
+        </div>
       </div>
     </section>
 
-    <section id="contact">
-      <h2>Contact</h2>
-      <p><a id="phone" class="big-link"></a></p>
-      <p><a id="instagram" class="big-link" target="_blank" rel="noopener"></a></p>
+    <!-- PICK YOUR COLOUR -->
+    <section class="colours-sec" id="colours">
+      <div class="wrap colours-grid">
+        <div class="hand-card reveal">
+          <svg id="hand" viewBox="-20 0 440 440" role="img" aria-label="An illustrated hand showing the selected polish colour">
+            <ellipse cx="200" cy="425" rx="120" ry="10" fill="#b76e79" opacity=".12"/>
+            <g id="handSkin"></g>
+          </svg>
+        </div>
+        <div class="colours-copy">
+          <p class="eyebrow reveal">Pick your colour</p>
+          <h2 class="display reveal">Find your<br>shade.</h2>
+          <p class="lede reveal">Tap a swatch and watch it glow on.</p>
+          <div class="swatches reveal" id="swatches" role="radiogroup" aria-label="Polish colour"></div>
+          <p class="swatch-name reveal" id="swatchName" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery-sec" id="gallery">
+      <div class="wrap">
+        <p class="eyebrow reveal">The gallery</p>
+        <h2 class="display reveal">Little works<br>of art.</h2>
+        <div class="masonry" id="masonry"></div>
+      </div>
+    </section>
+
+    <!-- VISIT -->
+    <section class="visit-sec" id="visit">
+      <div class="wrap">
+        <p class="eyebrow reveal">Visit us</p>
+        <h2 class="display reveal">Come<br>say hello.</h2>
+        <div class="visit-grid">
+          <div class="visit-info reveal">
+            <h3>Hours</h3>
+            <ul id="hours" class="plain"></ul>
+            <h3>Address</h3>
+            <p id="address"></p>
+            <h3>Contact</h3>
+            <p><a id="phone" class="big-link"></a></p>
+            <p><a id="instagram" class="big-link" target="_blank" rel="noopener"></a></p>
+          </div>
+          <div class="map-wrap reveal"><iframe id="map" title="Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="contact">
+      <h2 class="display reveal">Ready when<br>you are.</h2>
+      <a class="btn btn-large book-link reveal" href="#">Book Now</a>
     </section>
   </main>
 
@@ -60,68 +251,6 @@
   <a class="btn book-link sticky-book" href="#">Book Now</a>
 
   <script src="salon.js"></script>
-  <script>
-    (function () {
-      var s = SALON;
-      var $ = function (id) { return document.getElementById(id); };
-      var digits = s.phone.replace(/[^\d+]/g, "");
-
-      document.title = s.name + " — " + s.tagline;
-      document.documentElement.style.setProperty("--accent", s.accent);
-
-      if (s.demoBanner) {
-        $("banner").textContent = s.demoBanner;
-        $("banner").hidden = false;
-        document.body.classList.add("has-banner");
-      }
-
-      $("hero-name").textContent = s.name;
-      $("hero-tagline").textContent = s.tagline;
-
-      // Book Now: booking link if set, otherwise call the phone
-      document.querySelectorAll(".book-link").forEach(function (a) {
-        if (s.bookingLink) {
-          a.href = s.bookingLink; a.target = "_blank"; a.rel = "noopener";
-        } else {
-          a.href = "tel:" + digits;
-        }
-      });
-
-      s.services.forEach(function (sv) {
-        var li = document.createElement("li");
-        var left = document.createElement("div");
-        var n = document.createElement("strong"); n.textContent = sv.name;
-        left.appendChild(n);
-        if (sv.description) {
-          var d = document.createElement("span"); d.textContent = sv.description;
-          left.appendChild(d);
-        }
-        var p = document.createElement("span"); p.className = "price"; p.textContent = sv.price;
-        li.appendChild(left); li.appendChild(p);
-        $("service-list").appendChild(li);
-      });
-
-      $("about-text").textContent = s.about;
-
-      s.hours.forEach(function (h) {
-        var li = document.createElement("li"); li.textContent = h; $("hours").appendChild(li);
-      });
-      $("address").textContent = s.address;
-      $("map").src = "https://www.google.com/maps?q=" + encodeURIComponent(s.name + ", " + s.address) + "&output=embed";
-
-      $("phone").href = "tel:" + digits;
-      $("phone").textContent = "📞 " + s.phone;
-
-      if (s.instagram) {
-        var handle = s.instagram.replace(/^@/, "");
-        $("instagram").href = "https://instagram.com/" + handle;
-        $("instagram").textContent = "📷 @" + handle;
-      } else {
-        $("instagram").parentNode.hidden = true;
-      }
-
-      $("footer").textContent = "© " + new Date().getFullYear() + " " + s.name + " · " + s.address;
-    })();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
