@@ -74,7 +74,7 @@
     <nav class="nav" aria-label="Main">
       <a href="#services">Services</a>
       <a href="#how">How it works</a>
-      <a href="#colours">Colours</a>
+      <a href="#choose">Choose</a>
       <a href="#gallery">Gallery</a>
       <a href="#visit">Visit</a>
     </nav>
@@ -192,21 +192,19 @@
       </div>
     </section>
 
-    <!-- PICK YOUR COLOUR -->
-    <section class="colours-sec" id="colours">
-      <div class="wrap colours-grid">
-        <div class="hand-card reveal">
-          <svg id="hand" viewBox="-20 0 440 440" role="img" aria-label="An illustrated hand showing the selected polish colour">
-            <ellipse cx="200" cy="425" rx="120" ry="10" fill="#b76e79" opacity=".12"/>
-            <g id="handSkin"></g>
-          </svg>
-        </div>
-        <div class="colours-copy">
-          <p class="eyebrow reveal">Pick your colour</p>
-          <h2 class="display reveal">Find your<br>shade.</h2>
-          <p class="lede reveal">Tap a swatch and watch it glow on.</p>
-          <div class="swatches reveal" id="swatches" role="radiogroup" aria-label="Polish colour"></div>
-          <p class="swatch-name reveal" id="swatchName" aria-live="polite"></p>
+    <!-- PICK A SERVICE -->
+    <section class="pick-sec" id="choose">
+      <div class="wrap">
+        <p class="eyebrow reveal">Choose your treatment</p>
+        <h2 class="display reveal">Find your<br>treat.</h2>
+        <div class="tabs reveal" id="tabs" role="tablist" aria-label="Service categories"></div>
+        <div class="panel" id="panel" role="tabpanel" aria-live="polite"></div>
+        <div class="picked reveal" id="picked">
+          <div class="picked-info">
+            <span class="picked-label">Your pick</span>
+            <strong id="pickedName">Tap a service to select it</strong>
+          </div>
+          <button class="btn" id="bookThis" type="button">Book this</button>
         </div>
       </div>
     </section>
@@ -249,6 +247,21 @@
   <footer id="footer"></footer>
 
   <a class="btn book-link sticky-book" href="#">Book Now</a>
+
+  <!-- Booking options sheet -->
+  <div class="sheet-root" id="sheet" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button class="sheet-x" type="button" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <p class="eyebrow">Book your visit</p>
+      <h3 id="sheetTitle"></h3>
+      <p class="sheet-sub" id="sheetSub"></p>
+      <ul class="sheet-opts" id="sheetOpts"></ul>
+    </div>
+  </div>
 
   <script src="salon.js"></script>
   <script src="app.js"></script>
