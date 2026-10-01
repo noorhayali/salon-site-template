@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Nail Salon</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="banner" class="banner" hidden></div>
+
+  <header class="hero" id="top">
+    <h1 id="hero-name"></h1>
+    <p id="hero-tagline" class="tagline"></p>
+    <a class="btn book-link" href="#">Book Now</a>
+  </header>
+
+  <main>
+    <section id="services">
+      <h2>Services</h2>
+      <ul id="service-list" class="services"></ul>
+    </section>
+
+    <section id="gallery">
+      <h2>Gallery</h2>
+      <div class="grid">
+        <div class="tile t1"></div><div class="tile t2"></div><div class="tile t3"></div>
+        <div class="tile t4"></div><div class="tile t5"></div><div class="tile t6"></div>
+      </div>
+    </section>
+
+    <section id="about">
+      <h2>About</h2>
+      <p id="about-text"></p>
+    </section>
+
+    <section id="location">
+      <h2>Visit Us</h2>
+      <div class="two-col">
+        <div>
+          <h3>Hours</h3>
+          <ul id="hours" class="plain"></ul>
+          <h3>Address</h3>
+          <p id="address"></p>
+        </div>
+        <iframe id="map" title="Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p><a id="phone" class="big-link"></a></p>
+      <p><a id="instagram" class="big-link" target="_blank" rel="noopener"></a></p>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <a class="btn book-link sticky-book" href="#">Book Now</a>
+
+  <script src="salon.js"></script>
+  <script>
+    (function () {
+      var s = SALON;
+      var $ = function (id) { return document.getElementById(id); };
+      var digits = s.phone.replace(/[^\d+]/g, "");
+
+      document.title = s.name + " — " + s.tagline;
+      document.documentElement.style.setProperty("--accent", s.accent);
+
+      if (s.demoBanner) {
+        $("banner").textContent = s.demoBanner;
+        $("banner").hidden = false;
+        document.body.classList.add("has-banner");
+      }
+
+      $("hero-name").textContent = s.name;
+      $("hero-tagline").textContent = s.tagline;
+
+      // Book Now: booking link if set, otherwise call the phone
+      document.querySelectorAll(".book-link").forEach(function (a) {
+        if (s.bookingLink) {
+          a.href = s.bookingLink; a.target = "_blank"; a.rel = "noopener";
+        } else {
+          a.href = "tel:" + digits;
+        }
+      });
+
+      s.services.forEach(function (sv) {
+        var li = document.createElement("li");
+        var left = document.createElement("div");
+        var n = document.createElement("strong"); n.textContent = sv.name;
+        left.appendChild(n);
+        if (sv.description) {
+          var d = document.createElement("span"); d.textContent = sv.description;
+          left.appendChild(d);
+        }
+        var p = document.createElement("span"); p.className = "price"; p.textContent = sv.price;
+        li.appendChild(left); li.appendChild(p);
+        $("service-list").appendChild(li);
+      });
+
+      $("about-text").textContent = s.about;
+
+      s.hours.forEach(function (h) {
+        var li = document.createElement("li"); li.textContent = h; $("hours").appendChild(li);
+      });
+      $("address").textContent = s.address;
+      $("map").src = "https://www.google.com/maps?q=" + encodeURIComponent(s.name + ", " + s.address) + "&output=embed";
+
+      $("phone").href = "tel:" + digits;
+      $("phone").textContent = "📞 " + s.phone;
+
+      if (s.instagram) {
+        var handle = s.instagram.replace(/^@/, "");
+        $("instagram").href = "https://instagram.com/" + handle;
+        $("instagram").textContent = "📷 @" + handle;
+      } else {
+        $("instagram").parentNode.hidden = true;
+      }
+
+      $("footer").textContent = "© " + new Date().getFullYear() + " " + s.name + " · " + s.address;
+    })();
+  </script>
+</body>
+</html>
