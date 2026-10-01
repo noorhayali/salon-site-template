@@ -4,18 +4,62 @@ const SALON = {
   tagline: "You've earned it",
   address: "#11 - 2483 Main St, West Kelowna, BC V4T 2E8",
   phone: "250-452-9656",
-  // Leave empty ("") to make the Book Now buttons call the phone number instead.
+  email: "", // optional; adds an Email option to the booking sheet
+  // Optional online booking page. If set, "Book online" is the first option in the booking sheet.
+  // Every Book button opens the sheet, which also offers Call / Text / Email when that data exists.
   bookingLink: "",
   instagram: "", // handle only, e.g. "elegantnails" (leave empty to hide)
   hours: ["Hours coming soon"], // or e.g. ["Mon–Fri: 9am–6pm", "Sat: 10am–5pm", "Sun: Closed"]
-  // Optional per-service `icon`: "polish" | "gel" | "foot" | "wax" | "lash" | "sparkle".
-  // If omitted, the icon is picked from the service name.
-  services: [
-    { name: "Gel nails", price: "$XX", description: "Long-lasting shine and colour." },
-    { name: "Acrylic nails", price: "$XX", description: "Sculpted strength and length." },
-    { name: "Pedicures", price: "$XX", description: "Soak, scrub and polish." },
-    { name: "Waxing", price: "$XX", description: "Smooth, gentle hair removal." },
-    { name: "Eyelash extensions", price: "$XX", description: "Full, natural-looking lashes." }
+  // The single source of truth for the menu: it drives both the "Services" cards and the
+  // "Choose your treatment" picker. Each category has a name, an `icon` and its services.
+  // `icon` is a built-in name ("polish" | "gel" | "foot" | "wax" | "lash" | "sparkle")
+  // or your own inline SVG string, e.g. '<svg viewBox="0 0 48 48">…</svg>'.
+  // `price` is shown as written, so "$50" or "Ask for pricing" both work.
+  serviceCategories: [
+    {
+      name: "Nails", icon: "polish",
+      services: [
+        { name: "Acrylic Full Set", price: "$50" },
+        { name: "Acrylic White Fill", price: "$45" },
+        { name: "Gel Full Set", price: "$60" },
+        { name: "Gel Clear Fill", price: "$50" },
+        { name: "Gel White Fill", price: "$55" },
+        { name: "Solar Full Set White French", price: "$60" },
+        { name: "Solar Full Set Clear", price: "$55" },
+        { name: "Solar Clear Fill", price: "$45" },
+        { name: "Solar Color & White Fill", price: "$50" },
+        { name: "Shellac Gel Color", price: "$30" },
+        { name: "Shellac Gel French", price: "$40" },
+        { name: "Color Change", price: "$10" }
+      ]
+    },
+    {
+      name: "Spa", icon: "foot",
+      services: [
+        { name: "Manicure", price: "$25" },
+        { name: "Pedicure", price: "$40" },
+        { name: "Pedi & Mani", price: "$55" },
+        { name: "Kids Pedi & Mani", price: "$35" },
+        { name: "Paraffin Wax Hands", price: "$10" },
+        { name: "Paraffin Wax Feet", price: "$15" }
+      ]
+    },
+    {
+      name: "Waxing", icon: "wax",
+      services: [
+        { name: "Eyebrows", price: "$10" },
+        { name: "Upper Lip", price: "$7" },
+        { name: "Chin", price: "$8" },
+        { name: "Under Arm", price: "$18" },
+        { name: "Half Leg", price: "$30" }
+      ]
+    },
+    {
+      name: "Lashes", icon: "lash",
+      services: [
+        { name: "Eyelash Extensions", price: "Ask for pricing" }
+      ]
+    }
   ],
   // The three scroll-pinned "how it works" steps.
   steps: [
@@ -25,17 +69,6 @@ const SALON = {
   ],
   about: "Welcome to Elegant Nails and Spa, a relaxing space in West Kelowna where you can unwind and treat yourself. Our friendly team takes pride in careful, beautiful work.",
   accent: "#b76e79", // rose gold
-  // Polish shades for the "pick your colour" row. Use {name, hex} (or just a hex string).
-  colours: [
-    { name: "Rose Gold", hex: "#b76e79" },
-    { name: "Blush Petal", hex: "#f2b8c6" },
-    { name: "Ballet Slipper", hex: "#f4d6d2" },
-    { name: "Berry Kiss", hex: "#a8325e" },
-    { name: "Classic Red", hex: "#c4283c" },
-    { name: "Champagne", hex: "#e3c79a" },
-    { name: "Lavender Haze", hex: "#bba6d6" },
-    { name: "Midnight", hex: "#2e2a47" }
-  ],
   // Gallery photos. Put image files in the /media folder and list them here, e.g.
   //   photos: ["nails-1.jpg", "nails-2.jpg"]   (bare names are looked up in media/)
   //   photos: [{ src: "media/set-a.jpg", alt: "Rose chrome set" }]
