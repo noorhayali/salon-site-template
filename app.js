@@ -162,17 +162,47 @@
     }
   }
 
-  /* ---------- Service picker ---------- */
-  var selected = null; // { name, price }
+  /* ---------- Service picker (multi-select) ---------- */
+  var chosen = []; // [{ key, name, price, cat }] in the order tapped
   var activeCat = 0;
-  var tabsEl = $("tabs"), panel = $("panel"), picked = $("picked");
+  var tabsEl = $("tabs"), panel = $("panel"), cart = $("cart");
   var tabBtns = [];
+  var CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>';
 
-  function renderPicked() {
-    picked.classList.toggle("has", !!selected);
-    $("pickedName").textContent = selected
-      ? selected.name + (selected.price ? " · " + selected.price : "")
-      : "Tap a service to select it";
+  function svcKey(cat, sv) { return cat.name + "::" + sv.name; }
+  function indexOfKey(k) { for (var i = 0; i < chosen.length; i++) if (chosen[i].key === k) return i; return -1; }
+  // "$50" counts toward the total; "Ask for pricing" counts toward the number only.
+  function numeric(price) {
+    var m = /^\s*([^\d\s.,]{0,3})\s*(\d+(?:[.,]\d+)?)\s*\+?\s*$/.exec(String(price == null ? "" : price));
+    return m ? { sym: m[1], n: parseFloat(m[2].replace(",", ".")) } : null;
+  }
+  function totals() {
+    var sum = 0, sym = "", priced = 0;
+    chosen.forEach(function (c) {
+      var v = numeric(c.price);
+      if (v) { sum += v.n; priced++; if (!sym) sym = v.sym; }
+    });
+    var cents = Math.round(sum * 100);
+    var txt = (sym || "$") + (cents % 100 ? (cents / 100).toFixed(2) : String(cents / 100));
+    return { count: chosen.length, priced: priced, unpriced: chosen.length - priced, text: priced ? txt : "" };
+  }
+  function countLabel(n) { return n + (n === 1 ? " service" : " services"); }
+
+  function renderCart() {
+    var t = totals();
+    $("cartLabel").textContent = countLabel(t.count) + (t.text ? " · " + t.text : "");
+    cart.classList.toggle("show", t.count > 0);
+    d.body.classList.toggle("has-cart", t.count > 0);
+  }
+  function syncPanel() {
+    panel.querySelectorAll(".svc").forEach(function (b) {
+      b.setAttribute("aria-pressed", indexOfKey(b.dataset.key) >= 0 ? "true" : "false");
+    });
+  }
+  function toggleService(cat, sv) {
+    var k = svcKey(cat, sv), i = indexOfKey(k);
+    if (i >= 0) chosen.splice(i, 1); else chosen.push({ key: k, name: sv.name, price: sv.price, cat: cat.name });
+    renderCart();
   }
   function renderPanel() {
     panel.textContent = "";
@@ -181,16 +211,18 @@
     cat.services.forEach(function (sv, i) {
       var b = el("button", "svc");
       b.type = "button";
+      b.dataset.key = svcKey(cat, sv);
       b.style.setProperty("--i", Math.min(i, 14));
       b.appendChild(el("span", null, sv.name));
       b.appendChild(el("span", "svc-price", sv.price));
-      b.setAttribute("aria-pressed", selected && selected.name === sv.name && selected.cat === cat.name ? "true" : "false");
+      var chk = el("span", "svc-check"); chk.innerHTML = CHECK; b.appendChild(chk);
+      b.setAttribute("aria-pressed", indexOfKey(b.dataset.key) >= 0 ? "true" : "false");
       b.addEventListener("click", function () {
-        var already = b.getAttribute("aria-pressed") === "true";
-        selected = already ? null : { name: sv.name, price: sv.price, cat: cat.name };
-        panel.querySelectorAll(".svc").forEach(function (o) { o.setAttribute("aria-pressed", o === b && !already ? "true" : "false"); });
-        renderPicked();
+        toggleService(cat, sv);
+        b.setAttribute("aria-pressed", indexOfKey(b.dataset.key) >= 0 ? "true" : "false");
+        if (!reduce) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
       });
+      b.addEventListener("animationend", function (e) { if (e.animationName === "pop") b.classList.remove("pop"); });
       panel.appendChild(b);
     });
   }
@@ -219,7 +251,7 @@
     tabsEl.appendChild(t); tabBtns.push(t);
   });
   if (cats.length) selectCat(0); else $("choose").hidden = true;
-  renderPicked();
+  renderCart();
 
   /* ---------- Booking sheet ---------- */
   var sheet = $("sheet"), sheetPanel = sheet.querySelector(".sheet");
@@ -233,8 +265,8 @@
   var opener = null, closeTimer = 0;
 
   function message() {
-    return selected
-      ? "Hi! I'd like to book a " + selected.name + ". When are you available?"
+    return chosen.length
+      ? "Hi! I'd like to book: " + chosen.map(function (c) { return c.name; }).join(", ") + ". When are you available?"
       : "Hi! I'd like to book an appointment. When are you available?";
   }
   function addOpt(i, o) {
@@ -277,11 +309,38 @@
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
     else fallback();
   }
-  function buildSheet() {
-    $("sheetTitle").textContent = selected ? selected.name : "Book an appointment";
-    $("sheetSub").textContent = selected
-      ? [selected.cat, selected.price].filter(Boolean).join(" · ")
-      : "No service selected. Tell us what you have in mind.";
+  function buildSheet(rebuild) {
+    var t = totals();
+    sheet.classList.toggle("rebuilt", !!rebuild);
+    $("sheetTitle").textContent = !chosen.length ? "Book an appointment" : chosen.length === 1 ? chosen[0].name : countLabel(chosen.length);
+    $("sheetSub").textContent = chosen.length ? "" : "No service selected. Tell us what you have in mind.";
+    $("sheetSub").hidden = !!chosen.length;
+    var list = $("sheetList"); list.textContent = "";
+    chosen.forEach(function (c) {
+      var li = el("li", "sheet-item");
+      var name = el("span", "sheet-item-name"); name.appendChild(el("strong", null, c.name)); name.appendChild(el("span", null, c.cat));
+      li.appendChild(name);
+      li.appendChild(el("span", "sheet-item-price", c.price));
+      var rm = el("button", "sheet-rm"); rm.type = "button";
+      rm.setAttribute("aria-label", "Remove " + c.name);
+      rm.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+      rm.addEventListener("click", function () {
+        var i = indexOfKey(c.key);
+        if (i >= 0) chosen.splice(i, 1);
+        renderCart(); syncPanel(); buildSheet(true);
+        sheetPanel.focus({ preventScroll: true });
+      });
+      li.appendChild(rm);
+      list.appendChild(li);
+    });
+    var tot = $("sheetTotal");
+    tot.hidden = !chosen.length;
+    tot.textContent = "";
+    if (chosen.length) {
+      tot.appendChild(el("span", null, t.text ? "Total" : countLabel(t.count)));
+      tot.appendChild(el("strong", null, t.text || "Ask for pricing"));
+      if (t.text && t.unpriced) tot.appendChild(el("em", null, "Excludes " + t.unpriced + (t.unpriced === 1 ? " service" : " services") + " priced on request"));
+    }
     var box = $("sheetOpts"); box.textContent = "";
     var msg = message(), enc = encodeURIComponent(msg), i = 0;
     var touch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
@@ -295,7 +354,7 @@
       }
     }
     if (s.email) {
-      var subj = selected ? "Booking request: " + selected.name : "Booking request";
+      var subj = !chosen.length ? "Booking request" : chosen.length === 1 ? "Booking request: " + chosen[0].name : "Booking request: " + chosen.length + " services";
       addOpt(i++, { icon: "email", label: "Email", sub: s.email, href: "mailto:" + s.email + "?subject=" + encodeURIComponent(subj) + "&body=" + enc });
     }
     if (!i) box.appendChild(el("li", "sheet-empty", "Booking details are coming soon."));
@@ -320,7 +379,7 @@
   bookLinks.forEach(function (a) {
     a.addEventListener("click", function (e) { e.preventDefault(); openSheet(a); });
   });
-  $("bookThis").addEventListener("click", function () { openSheet($("bookThis")); });
+  $("cartBook").addEventListener("click", function () { openSheet($("cartBook")); });
   sheet.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeSheet(); });
   d.addEventListener("keydown", function (e) {
     if (sheet.hidden) return;
